@@ -1,8 +1,20 @@
 local UnitEntry = 700110
+local CLASS_TO_LIST = {
+    [1] = 500154, -- Warrior → Plate
+    [2] = 500155, -- Paladin → Scaled/Ornamented
+    [3] = 500157, -- Hunter → Chain
+    [4] = 500159, -- Rogue → Leather
+    [6] = 500156, -- Death Knight → Dreadplate
+    [5] = 500151, -- Priest → Mooncloth
+    [8] = 500152, -- Mage → Silk
+    [9] = 500153, -- Warlock → Felweave
+    [7] = 500158, -- Shaman → Linked/Ringmail/Mail
+    [11] = 500160, -- Druid → Dragonhide/Kodohide/Wyrmhide
+}
 
 local function Relentless_Vendor(event, player, creature)
     player:GossipSetText(string.format("                        |TInterface\\icons\\inv_helmet_130.png:55:55:30:0|t\n\nAtravés desse NPC, você encontra ás seguintes opções: \n\n                     |cFFFF00FF• |cFF000000Season 7 - Gear\n                     |cFFFF00FF• |cFF000000Season 7 - OffSet\n                     |cFFFF00FF• |cFF000000Season 7 - Weapons\n                     |cFFFF00FF• |cFF000000Season 7 - Relics"))
-    player:GossipMenuAddItem(1,"|TInterface\\icons\\inv_helmet_98:30|t S7 PvP Gear", 0, 1)
+    player:GossipMenuAddItem(1,"|TInterface\\icons\\inv_helmet_98:30|t S7 PvP Gear (filtrado pela sua classe)", 0, 1)
     player:GossipMenuAddItem(1,"|TInterface\\icons\\inv_belt_48c:30|t S7 PvP Off-Set", 0, 2)
     player:GossipMenuAddItem(1,"|TInterface\\icons\\inv_sword_149:30|t S7 PvP Weapons", 0, 3)
     player:GossipMenuAddItem(1,"|TInterface\\icons\\ability_wintergrasp_rank1:30|t Wintergrasp QuarterMaster", 0, 4)	
@@ -14,9 +26,15 @@ RegisterCreatureGossipEvent(UnitEntry, 1, Relentless_Vendor)
 
 local function Relentless_Vendor_Select(event, player, creature, sender, intid, code)
     
-	if(intid == 1) then
-        player:SendListInventory(creature, 500010)	
-	end
+    if(intid == 1) then
+        local class = player:GetClass()
+        local entry = CLASS_TO_LIST[class]
+        if not entry then
+            player:SendBroadcastMessage("Lista específica por classe ainda não definida para sua classe. Exibindo lista geral.")
+            entry = 500010
+        end
+        player:SendListInventory(creature, entry)
+    end
 	
 	if(intid == 2) then
         player:SendListInventory(creature, 700113)		
